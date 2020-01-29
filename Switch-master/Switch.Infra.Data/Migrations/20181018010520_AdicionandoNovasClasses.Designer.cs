@@ -2,19 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Switch.Infra.Data.Context;
 
 namespace Switch.Infra.Data.Migrations
 {
     [DbContext(typeof(SwitchContext))]
-    partial class SwitchContextModelSnapshot : ModelSnapshot
+    [Migration("20181018010520_AdicionandoNovasClasses")]
+    partial class AdicionandoNovasClasses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Switch.Domain.Entities.Amigo", b =>
@@ -37,6 +39,8 @@ namespace Switch.Infra.Data.Migrations
 
                     b.Property<DateTime>("DataPublicacao");
 
+                    b.Property<int?>("PostagemId");
+
                     b.Property<string>("Texto")
                         .IsRequired()
                         .HasMaxLength(600);
@@ -44,6 +48,8 @@ namespace Switch.Infra.Data.Migrations
                     b.Property<int>("UsuarioId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PostagemId");
 
                     b.HasIndex("UsuarioId");
 
@@ -57,7 +63,7 @@ namespace Switch.Infra.Data.Migrations
 
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(400);
+                        .HasMaxLength(100);
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -81,11 +87,11 @@ namespace Switch.Infra.Data.Migrations
 
                     b.Property<int>("TipoDocumento");
 
-                    b.Property<int>("UsuarioID");
+                    b.Property<int>("UsuarioId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsuarioID")
+                    b.HasIndex("UsuarioId")
                         .IsUnique();
 
                     b.ToTable("Identificacao");
@@ -97,6 +103,8 @@ namespace Switch.Infra.Data.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("AnoFormacao");
+
+                    b.Property<bool>("EstudandoAtualmente");
 
                     b.Property<string>("Nome");
 
@@ -118,7 +126,7 @@ namespace Switch.Infra.Data.Migrations
 
                     b.Property<DateTime?>("DataSaida");
 
-                    b.Property<string>("EmpresaAtual");
+                    b.Property<bool>("EmpresaAtual");
 
                     b.Property<string>("Nome");
 
@@ -154,7 +162,7 @@ namespace Switch.Infra.Data.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Postagems");
+                    b.ToTable("Postagens");
                 });
 
             modelBuilder.Entity("Switch.Domain.Entities.ProcurandoPor", b =>
@@ -169,26 +177,11 @@ namespace Switch.Infra.Data.Migrations
                     b.ToTable("ProcurandoPor");
 
                     b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Descricao = "NaoEspecificado"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Descricao = "Namoro"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Descricao = "Amizade"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Descricao = "RelacionamentoSerio"
-                        });
+                        new { Id = 1, Descricao = "NaoEspecificado" },
+                        new { Id = 2, Descricao = "Namoro" },
+                        new { Id = 3, Descricao = "Amizade" },
+                        new { Id = 4, Descricao = "RelacionamentoSerio" }
+                    );
                 });
 
             modelBuilder.Entity("Switch.Domain.Entities.StatusRelacionamento", b =>
@@ -203,26 +196,11 @@ namespace Switch.Infra.Data.Migrations
                     b.ToTable("StatusRelacionamento");
 
                     b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Descricao = "NaoEspecificado"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Descricao = "Solteiro"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Descricao = "Casado"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Descricao = "EmRelacionamentoSerio"
-                        });
+                        new { Id = 1, Descricao = "NaoEspecificado" },
+                        new { Id = 2, Descricao = "Solteiro" },
+                        new { Id = 3, Descricao = "Casado" },
+                        new { Id = 4, Descricao = "EmRelacionamentoSerio" }
+                    );
                 });
 
             modelBuilder.Entity("Switch.Domain.Entities.Usuario", b =>
@@ -299,6 +277,10 @@ namespace Switch.Infra.Data.Migrations
 
             modelBuilder.Entity("Switch.Domain.Entities.Comentario", b =>
                 {
+                    b.HasOne("Switch.Domain.Entities.Postagem")
+                        .WithMany("Comentarios")
+                        .HasForeignKey("PostagemId");
+
                     b.HasOne("Switch.Domain.Entities.Usuario", "Usuario")
                         .WithMany("Comentarios")
                         .HasForeignKey("UsuarioId")
@@ -309,7 +291,7 @@ namespace Switch.Infra.Data.Migrations
                 {
                     b.HasOne("Switch.Domain.Entities.Usuario", "Usuario")
                         .WithOne("Identificacao")
-                        .HasForeignKey("Switch.Domain.Entities.Identificacao", "UsuarioID")
+                        .HasForeignKey("Switch.Domain.Entities.Identificacao", "UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

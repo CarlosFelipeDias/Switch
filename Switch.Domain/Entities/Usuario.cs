@@ -23,6 +23,7 @@ namespace Switch.Domain.Entities
         public DateTime  DataNascimento { get; private set; }
         public SexoEnum Sexo { get; private set; }
         public string UrlFoto { get; private set; }
+
         public virtual Identificacao Identificacao { get;  set; }
         public virtual StatusRelacionamento StatusRelacionamento { get; set; }
         public virtual ProcurandoPor ProcurandoPor { get; set; }
